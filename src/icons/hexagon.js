@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Bell = props => {
+const Hexagon = props => {
   const { color, size, ...otherProps } = props;
   return (
     <svg
@@ -16,20 +16,19 @@ const Bell = props => {
       strokeLinejoin="round"
       {...otherProps}
     >
-      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
     </svg>
   );
 };
 
-Bell.propTypes = {
+Hexagon.propTypes = {
   color: PropTypes.string,
   size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
-Bell.defaultProps = {
+Hexagon.defaultProps = {
   color: 'currentColor',
   size: '24',
 };
 
-export default Bell;
+export default Hexagon;

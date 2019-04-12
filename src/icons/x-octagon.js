@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Bell = props => {
+const XOctagon = props => {
   const { color, size, ...otherProps } = props;
   return (
     <svg
@@ -16,20 +16,21 @@ const Bell = props => {
       strokeLinejoin="round"
       {...otherProps}
     >
-      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+      <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2" />
+      <line x1="15" y1="9" x2="9" y2="15" />
+      <line x1="9" y1="9" x2="15" y2="15" />
     </svg>
   );
 };
 
-Bell.propTypes = {
+XOctagon.propTypes = {
   color: PropTypes.string,
   size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
-Bell.defaultProps = {
+XOctagon.defaultProps = {
   color: 'currentColor',
   size: '24',
 };
 
-export default Bell;
+export default XOctagon;

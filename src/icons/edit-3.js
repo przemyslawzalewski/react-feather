@@ -5,10 +5,10 @@ const Edit3 = props => {
   const { color, size, ...otherProps } = props;
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
       width={size}
       height={size}
       viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
       fill="none"
       stroke={color}
       strokeWidth="2"
@@ -16,8 +16,8 @@ const Edit3 = props => {
       strokeLinejoin="round"
       {...otherProps}
     >
-      <polygon points="14 2 18 6 7 17 3 17 3 13 14 2" />
-      <line x1="3" y1="22" x2="21" y2="22" />
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
     </svg>
   );
 };
