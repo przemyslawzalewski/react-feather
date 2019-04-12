@@ -48,7 +48,7 @@
     "uppercamelcase": "^3.0.0"
   },
   "peerDependencies": {
-    "react": ">= 15",
-    "prop-types": ">= 15"
+    "react": ">= 16",
+    "prop-types": ">= 16"
   }
 }
