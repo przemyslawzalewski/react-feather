@@ -21,16 +21,12 @@ type Icon = ComponentType<Props>;
 
 glob(`${rootDir}/src/feather/icons/**.svg`, (err, icons) => {
   fs.writeFileSync(path.join(rootDir, 'src', 'index.js'), '', 'utf-8');
-  fs.writeFileSync(
-    path.join(rootDir, 'src', 'index.d.ts'),
-    initialTypeDefinitions,
-    'utf-8'
-  );
+  fs.writeFileSync(path.join(rootDir, 'src', 'index.d.ts'), initialTypeDefinitions, 'utf-8');
 
   icons.forEach(i => {
     const svg = fs.readFileSync(i, 'utf-8');
     const id = path.basename(i, '.svg');
-    const ComponentName = (id === 'github') ? 'GitHub' : uppercamelcase(id);
+    const ComponentName = id === 'github' ? 'GitHub' : uppercamelcase(id);
     const $ = cheerio.load(svg, {
       xmlMode: true,
     });
@@ -62,11 +58,11 @@ glob(`${rootDir}/src/feather/icons/**.svg`, (err, icons) => {
         const { color, size, ...otherProps } = props;
         return (
           ${$('svg')
-            .toString()
-            .replace(new RegExp('stroke="currentColor"', 'g'), 'stroke={color}')
-            .replace('width="24"', 'width={size}')
-            .replace('height="24"', 'height={size}')
-            .replace('otherProps="..."', '{...otherProps}')}
+    .toString()
+    .replace(new RegExp('stroke="currentColor"', 'g'), 'stroke={color}')
+    .replace('width="24"', 'width={size}')
+    .replace('height="24"', 'height={size}')
+    .replace('otherProps="..."', '{...otherProps}')}
         )
       };
 
@@ -93,20 +89,18 @@ glob(`${rootDir}/src/feather/icons/**.svg`, (err, icons) => {
       parser: 'flow',
     });
 
+    const directory = path.dirname(location);
+
+    if (!fs.existsSync(directory)) {
+      fs.mkdirSync(directory, { recursive: true });
+    }
+
     fs.writeFileSync(location, component, 'utf-8');
 
     const exportString = `export ${ComponentName} from './icons/${id}';\r\n`;
-    fs.appendFileSync(
-      path.join(rootDir, 'src', 'index.js'),
-      exportString,
-      'utf-8'
-    );
+    fs.appendFileSync(path.join(rootDir, 'src', 'index.js'), exportString, 'utf-8');
 
     const exportTypeString = `export const ${ComponentName}: Icon;\n`;
-    fs.appendFileSync(
-      path.join(rootDir, 'src', 'index.d.ts'),
-      exportTypeString,
-      'utf-8'
-    );
+    fs.appendFileSync(path.join(rootDir, 'src', 'index.d.ts'), exportTypeString, 'utf-8');
   });
 });
