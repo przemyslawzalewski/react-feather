@@ -19,6 +19,16 @@ interface Props extends SVGAttributes<SVGElement> {
 type Icon = ComponentType<Props>;
 `;
 
+const writeText = (filePath, text) => {
+  const directory = path.dirname(filePath);
+
+  if (!fs.existsSync(directory)) {
+    fs.mkdirSync(directory, { recursive: true });
+  }
+
+  fs.writeFileSync(filePath, text, 'utf-8');
+};
+
 glob(`${rootDir}/feather/icons/**.svg`, (err, icons) => {
   fs.writeFileSync(path.join(rootDir, 'src', 'index.js'), '', 'utf-8');
   fs.writeFileSync(path.join(rootDir, 'src', 'index.d.ts'), initialTypeDefinitions, 'utf-8');
@@ -32,6 +42,31 @@ glob(`${rootDir}/feather/icons/**.svg`, (err, icons) => {
     });
     const fileName = path.basename(i).replace('.svg', '.js');
     const location = path.join(rootDir, 'src/icons', fileName);
+
+    const defaultProps = `{
+      color: 'currentColor',
+      size: 24,
+    };`;
+
+    const propTypes = `{
+      color: PropTypes.string,
+      size: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number
+      ]),
+    };`;
+
+    const props = `
+      import PropTypes from 'prop-types';
+
+      export const propTypes = ${propTypes};
+
+      export const defaultProps = ${defaultProps};
+    `;
+
+    const propsFilePath = path.join(rootDir, 'src', 'props.js');
+
+    writeText(propsFilePath, props);
 
     $('*').each((index, el) => {
       Object.keys(el.attribs).forEach(x => {
@@ -52,34 +87,23 @@ glob(`${rootDir}/feather/icons/**.svg`, (err, icons) => {
 
     const element = `
       import React from 'react';
-      import PropTypes from 'prop-types';
 
-      const ${ComponentName} = (props) => {
-        const { color, size, ...otherProps } = props;
-        return (
-          ${$('svg')
+      import { propTypes, defaultProps } from '../props';
+
+      const ${ComponentName} = ({ color, size, ...otherProps }) => (
+        ${$('svg')
     .toString()
     .replace(new RegExp('stroke="currentColor"', 'g'), 'stroke={color}')
     .replace('width="24"', 'width={size}')
     .replace('height="24"', 'height={size}')
     .replace('otherProps="..."', '{...otherProps}')}
-        )
-      };
+      );
 
-      ${ComponentName}.propTypes = {
-        color: PropTypes.string,
-        size: PropTypes.oneOfType([
-          PropTypes.string,
-          PropTypes.number
-        ]),
-      }
+      ${ComponentName}.propTypes = propTypes;
 
-      ${ComponentName}.defaultProps = {
-        color: 'currentColor',
-        size: '24',
-      }
+      ${ComponentName}.defaultProps = defaultProps;
 
-      export default ${ComponentName}
+      export default ${ComponentName};
     `;
 
     const component = prettier.format(element, {
@@ -89,13 +113,7 @@ glob(`${rootDir}/feather/icons/**.svg`, (err, icons) => {
       parser: 'flow',
     });
 
-    const directory = path.dirname(location);
-
-    if (!fs.existsSync(directory)) {
-      fs.mkdirSync(directory, { recursive: true });
-    }
-
-    fs.writeFileSync(location, component, 'utf-8');
+    writeText(location, component);
 
     const exportString = `export ${ComponentName} from './icons/${id}';\r\n`;
     fs.appendFileSync(path.join(rootDir, 'src', 'index.js'), exportString, 'utf-8');
