@@ -43,30 +43,24 @@ glob(`${rootDir}/feather/icons/**.svg`, (err, icons) => {
     const fileName = path.basename(i).replace('.svg', '.js');
     const location = path.join(rootDir, 'src/icons', fileName);
 
-    const defaultProps = `{
-      color: 'currentColor',
-      size: 24,
-    };`;
+    const defaults = `{
+      width: 24,
+      height: 24,
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: 2,
+      strokeLinecap: "round",
+      strokeLinejoin: "round"
+    }`;
 
-    const propTypes = `{
-      color: PropTypes.string,
-      size: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number
-      ]),
-    };`;
-
-    const props = `
-      import PropTypes from 'prop-types';
-
-      export const propTypes = ${propTypes};
-
-      export const defaultProps = ${defaultProps};
+    const defaultsModule = `
+      export default ${defaults};
     `;
 
-    const propsFilePath = path.join(rootDir, 'src', 'props.js');
+    const defaultsFilePath = path.join(rootDir, 'src', 'defaults.js');
 
-    writeText(propsFilePath, props);
+    writeText(defaultsFilePath, defaultsModule);
 
     $('*').each((index, el) => {
       Object.keys(el.attribs).forEach(x => {
@@ -81,6 +75,7 @@ glob(`${rootDir}/feather/icons/**.svg`, (err, icons) => {
       });
 
       if (el.name === 'svg') {
+        el.attribs = {};
         $(el).attr('otherProps', '...');
       }
     });
@@ -88,20 +83,28 @@ glob(`${rootDir}/feather/icons/**.svg`, (err, icons) => {
     const element = `
       import React from 'react';
 
-      import { propTypes, defaultProps } from '../props';
+      import defaults from '../defaults';
 
-      const ${ComponentName} = ({ color, size, ...otherProps }) => (
+      const ${ComponentName} = props => (
         ${$('svg')
     .toString()
-    .replace(new RegExp('stroke="currentColor"', 'g'), 'stroke={color}')
-    .replace('width="24"', 'width={size}')
-    .replace('height="24"', 'height={size}')
-    .replace('otherProps="..."', '{...otherProps}')}
+    .replace(/(x1=)"([\d\.]*)"/gi, '$1{$2}')
+    .replace(/(x2=)"([\d\.]*)"/gi, '$1{$2}')
+    .replace(/(y1=)"([\d\.]*)"/gi, '$1{$2}')
+    .replace(/(y2=)"([\d\.]*)"/gi, '$1{$2}')
+    .replace(/(cx=)"([\d\.]*)"/gi, '$1{$2}')
+    .replace(/(cy=)"([\d\.]*)"/gi, '$1{$2}')
+    .replace(/(r=)"([\d\.]*)"/gi, '$1{$2}')
+    .replace(/(x=)"([\d\.]*)"/gi, '$1{$2}')
+    .replace(/(y=)"([\d\.]*)"/gi, '$1{$2}')
+    .replace(/(width=)"([\d\.]*)"/gi, '$1{$2}')
+    .replace(/(height=)"([\d\.]*)"/gi, '$1{$2}')
+    .replace(/(rx=)"([\d\.]*)"/gi, '$1{$2}')
+    .replace(/(ry=)"([\d\.]*)"/gi, '$1{$2}')
+    .replace('width="24"', 'width={24}')
+    .replace('height="24"', 'height={24}')
+    .replace('otherProps="..."', '{...defaults} {...props}')}
       );
-
-      ${ComponentName}.propTypes = propTypes;
-
-      ${ComponentName}.defaultProps = defaultProps;
 
       export default ${ComponentName};
     `;
