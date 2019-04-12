@@ -4,6 +4,7 @@
   "description": "React component for Feather icons",
   "main": "dist/index.js",
   "module": "es/index.js",
+  "sideEffects": false,
   "typings": "dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
